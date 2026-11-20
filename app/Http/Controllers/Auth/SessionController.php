@@ -9,31 +9,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-class SessionController extends Controller
-{
-    public function create(): View
-    {
-        return view('auth.login');
+class SessionController extends Controller {
+  public function create(): View {
+    return view('auth.login');
+  }
+
+  public function store(LoginRequest $request): RedirectResponse {
+    $request->authenticate();
+    $request->session()->regenerate();
+
+    if ($request->user()->must_change_password) {
+      return redirect()->route('password.edit');
     }
 
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
-        $request->session()->regenerate();
+    return redirect()->intended(route('dashboard'));
+  }
 
-        if ($request->user()->must_change_password) {
-            return redirect()->route('password.edit');
-        }
+  public function destroy(Request $request): RedirectResponse {
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
 
-        return redirect()->intended(route('dashboard'));
-    }
-
-    public function destroy(Request $request): RedirectResponse
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('login')->with('status', 'Anda telah keluar.');
-    }
+    return redirect()->route('login')->with('status', 'Anda telah keluar.');
+  }
 }

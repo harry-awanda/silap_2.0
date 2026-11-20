@@ -127,19 +127,40 @@ Jika muncul Vite manifest not found, jalankan npm ci dan npm run build. Setelah 
 
 Konfigurasi MySQL aktual tetap pada .env lokal dan tidak ikut push. SQLite awal di database/database.sqlite tidak lagi dipakai oleh aplikasi dan tetap diabaikan Git. Test memaksa DB_CONNECTION=sqlite, DB_DATABASE=:memory: dan DB_URL kosong agar tidak menjalankan migration/rollback pada MySQL. Jangan arahkan DB_DATABASE/DB_URL ke database SILAP lama.
 
+## Coding style
+
+Gunakan 2 spasi untuk setiap tingkat indentasi, tanpa tab. Kurung kurawal pembuka berada pada baris yang sama untuk class, method, function, closure dan control flow:
+
+    if (blank($data['password'])) {
+      return;
+    }
+
+.editorconfig menetapkan aturan editor. PHP memakai .php-cs-fixer.dist.php (PHP CS Fixer menggantikan Pint), sedangkan Blade, CSS, JavaScript, JSON dan YAML memakai .prettierrc.json dengan Prettier serta plugin Blade. CI memeriksa format PHP dan frontend.
+
+    composer run format
+    npm run format
+
+Untuk memeriksa tanpa mengubah file:
+
+    composer run format:check
+    npm run format:check
+
+Format hanya kode aplikasi yang dikelola proyek. Bundle template public/assets, dependency, lockfile hasil generator, cache dan hasil build dikecualikan. Dokumen plan/ tetap lokal dan mengikuti indentasi 2 spasi untuk contoh kode.
+
 ## Validasi
 
 Perintah yang dipakai:
 
     php artisan test --compact
-    php vendor/bin/pint --test
+    composer run format:check
+    npm run format:check
     composer validate --strict
     composer check-platform-reqs
     php artisan migrate:status
     php artisan route:list
     npm run build
 
-Hasil terbaru tahap 1B: 34 test lulus dengan 188 assertion pada SQLite in-memory dan 34 test/188 assertion pada MySQL silap_test. Pint, validasi manifest Composer dan build Vite diperiksa sebelum commit. Enam migration sudah diterapkan pada MySQL aplikasi tanpa reset database.
+Hasil terbaru tahap 1B: 34 test lulus dengan 188 assertion pada SQLite in-memory dan 34 test/188 assertion pada MySQL silap_test. PHP CS Fixer, Prettier, validasi manifest Composer dan build Vite diperiksa sebelum commit. Enam migration sudah diterapkan pada MySQL aplikasi tanpa reset database.
 
 Pengujian mencakup login/logout, pembatasan percobaan, password wajib, sesi lama, batas admin/superadmin, multi-role, bootstrap idempotent, filter/escaping UI dan migration ulang. Login, dashboard dan daftar akun diperiksa dengan Chrome headless pada viewport 1366x900 dan 390x844; sidebar mobile disesuaikan dan tidak ada overflow halaman. Fixture browser hanya pada database test dan sudah dibersihkan. Belum ada pengujian fitur bisnis/performa produksi.
 

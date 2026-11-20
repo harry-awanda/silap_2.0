@@ -26,14 +26,14 @@ jobs:
       - run: composer install --no-interaction --prefer-dist --no-progress
       - run: composer validate --strict
       - run: cp .env.example .env && php artisan key:generate
-      - run: php vendor/bin/pint --test
+      - run: composer run format:check
       - run: php artisan test --compact
       - uses: actions/setup-node@v7
         if: matrix.php == '8.5'
         with:
           node-version: '24'
           cache: npm
-      - run: npm ci && npm run build
+      - run: npm ci && npm run format:check && npm run build
         if: matrix.php == '8.5'
 
   mysql:

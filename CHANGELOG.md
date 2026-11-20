@@ -4,6 +4,18 @@ Semua perubahan minor, major, dan dokumentasi dicatat di sini. Tanggal mengikuti
 
 ## [Unreleased]
 
+### 2026-11-20 ? Coding style 2 spasi dan kurung sejajar
+
+- Menerapkan keputusan pengguna D12: indentasi 2 spasi tanpa tab dan kurung pembuka pada baris deklarasi/kondisi, termasuk class, method dan closure.
+- Mengganti Pint dengan PHP CS Fixer untuk mengatur indentasi PHP; menambahkan Prettier serta plugin Blade untuk frontend/config.
+- Menyelaraskan .editorconfig, konfigurasi formatter, script Composer/npm dan pemeriksaan CI.
+- Memformat kode PHP, Blade, CSS, JS, JSON, YAML dan XML PHPUnit yang dikelola proyek. Bundle Sneat asli dan lockfile generator tidak diformat ulang.
+- Memperbarui README, daftar keputusan dan draft modular coding style pada plan/ (tetap diabaikan Git).
+- Validasi lokal: SQLite dan MySQL terisolasi masing-masing 34 test/188 assertion lulus; kedua pemeriksaan format, Composer validate --strict dan build Vite lulus.
+
+Perubahan ini menetapkan standar kode; integrasi bundle Sneat lengkap tetap paket UI berikutnya.
+
+
 ### 2026-11-20 — Rencana integrasi bundle Sneat lengkap
 
 - Mencatat keputusan pengguna D11: seluruh isi public/assets SILAP lama boleh disalin untuk menggunakan template Sneat yang sudah tersedia.
