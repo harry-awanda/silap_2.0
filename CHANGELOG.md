@@ -4,6 +4,18 @@ Semua perubahan minor, major, dan dokumentasi dicatat di sini. Tanggal mengikuti
 
 ## [Unreleased]
 
+### 2026-11-20 — Rencana integrasi bundle Sneat lengkap
+
+- Mencatat keputusan pengguna D11: seluruh isi public/assets SILAP lama boleh disalin untuk menggunakan template Sneat yang sudah tersedia.
+- Mengganti target penyalinan aset minimum menjadi bundle lengkap dengan struktur css/js/vendor/img tetap; Blade memakai ulang markup/layout template, bukan membangun replika.
+- Menetapkan integrasi login, password, dashboard dan akun sebagai paket UI berikutnya sebelum memperluas halaman fitur.
+- Menyelaraskan arsitektur UI, tahapan, indeks, daftar keputusan, draft modular integrasi Sneat, dan README.
+- Mempertahankan kebutuhan pemuatan vendor per halaman, urutan script, policy/route v2 dan pengujian desktop/mobile.
+- Validasi perubahan ini berupa peninjauan konsistensi dokumen, tautan lokal dan aturan ignore; tidak menjalankan ulang test aplikasi karena tidak ada perubahan runtime.
+
+Status: pembaruan rencana saja. Bundle lengkap belum disalin dan Blade runtime belum diubah pada sesi ini.
+
+
 ### 2026-11-20 — Verifikasi CI tahap 1B
 
 - Implementasi 58d4842 sudah di-push; GitHub Actions run 44714647355 menunjukkan seluruh job sukses: sqlite (8.3), sqlite (8.5), dan mysql.

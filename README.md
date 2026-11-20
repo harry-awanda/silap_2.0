@@ -20,7 +20,11 @@ Root Laravel lokal: **D:\.Learning\silap_v2.0**. Repository: [harry-awanda/silap
 - 34 test autentikasi/akun/fondasi, teruji pada SQLite in-memory dan MySQL silap_test yang terisolasi; tidak mereset database aplikasi.
 - plan/, .env, database SQLite lokal, vendor, node_modules dan hasil build tidak di-track Git.
 
-Sumber template: D:\.Learning\silap\public\assets. Hanya CSS dan font yang diperlukan disalin; foto siswa, storage dan konfigurasi environment lama tidak disalin. Lihat public/assets/NOTICE.md.
+Sumber template: D:\.Learning\silap\public\assets. Pada fondasi awal baru CSS/font minimum yang disalin; lihat public/assets/NOTICE.md.
+
+Keputusan UI terbaru: gunakan bundle Sneat yang sudah tersedia dengan menyalin seluruh isi public/assets SILAP lama ke public/assets v2, termasuk css, js, vendor dan img. Blade diimplementasikan ulang memakai struktur HTML/layout/komponen template yang ada, lalu disesuaikan dengan route, data dan policy v2. Tidak perlu membuat ulang desain atau replika CSS/JS Sneat.
+
+Integrasi bundle lengkap dan penyesuaian Blade menjadi paket UI berikutnya; belum dilakukan pada perubahan dokumentasi ini. Vendor yang tersedia tetap dimuat sesuai kebutuhan halaman, dengan urutan dependensi template dan tanpa duplikasi melalui Vite.
 
 ## Keputusan workflow
 
