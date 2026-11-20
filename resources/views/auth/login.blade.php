@@ -17,7 +17,7 @@
           <label for="username" class="form-label">Username</label>
           <input
             id="username"
-            class="form-control @error('username') is-invalid @enderror"
+            class="form-control {{ $errors->has('username') ? 'is-invalid' : '' }}"
             name="username"
             value="{{ old('username') }}"
             placeholder="Masukkan username Anda"
@@ -25,10 +25,7 @@
             maxlength="50"
             required
             autofocus
-            @error
-            ('username')
-            aria-invalid="true"
-            @enderror
+            aria-invalid="{{ $errors->has('username') ? 'true' : 'false' }}"
           />
         </div>
         <x-password-input name="password" label="Password" autocomplete="current-password" />

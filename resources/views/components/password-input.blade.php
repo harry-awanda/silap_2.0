@@ -9,10 +9,7 @@
       autocomplete="{{ $autocomplete }}"
       {{ $attributes->class(['form-control', 'is-invalid' => $errors->has($name)]) }}
       @if ($help) aria-describedby="{{ $name }}-help" @endif
-      @error
-      ($name)
-      aria-invalid="true"
-      @enderror
+      aria-invalid="{{ $errors->has($name) ? 'true' : 'false' }}"
       required
     />
     <button

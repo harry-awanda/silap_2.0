@@ -4,6 +4,12 @@ Semua perubahan minor, major, dan dokumentasi dicatat di sini. Tanggal mengikuti
 
 ## [Unreleased]
 
+### 2026-11-20 ? Perbaikan kompatibilitas formatter atribut Blade
+
+- Mengganti directive error pada atribut input login/password dengan ekspresi atribut biasa. Pemformatan Blade berulang sebelumnya dapat memecah directive dari argumennya dan menyebabkan HTTP 500.
+- Mempertahankan tampilan validasi, aria-invalid dan perilaku autentikasi; pemeriksaan format berulang serta regresi dilakukan kembali setelah perbaikan.
+
+
 ### 2026-11-20 ? Implementasi UI Sneat lengkap
 
 - Menyalin seluruh bundle 685 file public/assets dari SILAP lama; mempertahankan struktur direktori dan perbaikan font Boxicons WOFF2 lokal.
