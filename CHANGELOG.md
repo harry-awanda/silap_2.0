@@ -4,6 +4,42 @@ Semua perubahan minor, major, dan dokumentasi dicatat di sini. Tanggal mengikuti
 
 ## [Unreleased]
 
+### 2026-11-20 — Tahap 1B: autentikasi, role dan pengelolaan akun
+
+Added:
+- Login/logout username, pembatasan percobaan gagal, regenerasi sesi, pemeriksaan akun nonaktif dan invalidasi sesi setelah password berubah.
+- Spatie Permission 8.5.0, enum/seeder sembilan role tetap dan policy akun tanpa bypass superadmin global.
+- Migration tambahan username unik, email opsional, wajib ganti password, timestamp password dan status nonaktif; tabel permission serta audit akun.
+- Bootstrap superadmin via CLI dengan prompt tersembunyi atau password acak sekali tampil; konfigurasi env opsional dan seeder idempotent tanpa password bawaan.
+- Pengelolaan akun bagi admin/superadmin: tambah/ubah, multi-role, filter/pagination, reset sementara sekali tampil, nonaktif/aktif dan pencabutan sesi.
+- Proteksi akun superadmin, akun sendiri dan administrator terakhir, dengan transaksi/lock dan audit yang tidak menyimpan password/hash.
+- Dashboard multi-role dan navigasi sesuai policy memakai template SILAP; ganti password, login dan daftar akun responsif.
+- Pesan validasi Indonesia, konfigurasi test MySQL terpisah dan guard agar test tidak memakai database aplikasi.
+- Workflow CI SQLite/PHP 8.3+8.5, MySQL service, formatter dan build Node 24.
+
+Changed:
+- Root sekarang mengarah ke login/dashboard, bukan halaman persiapan.
+- Password awal/reset wajib diganti sebelum memakai dashboard/akun; password sendiri diperiksa ulang dalam transaksi agar reset bersamaan tidak tertimpa.
+- Flash password sementara disimpan terenkripsi; respons autentikasi/akun tidak di-cache.
+- Perubahan role sendiri mengakhiri sesi; session database dan remember token akun terkait dicabut untuk reset/nonaktif/role.
+- Lock reset/ganti password dibatasi pada akun terkait; perubahan administrator diserialisasi melalui role inti agar tidak mengunci seluruh tabel users.
+- Menghapus kolom email_verified_at dan tabel reset email yang tidak memiliki alur fitur melalui migration baru, tanpa menulis ulang baseline yang sudah terpasang.
+- composer setup menjalankan migration dengan seeder; README dan progres modular mengikuti kondisi aktual.
+
+Validasi lokal:
+- SQLite :memory:: 34 test lulus, 188 assertion.
+- MySQL silap_test: 34 test lulus, 188 assertion; database aplikasi silap_db tidak di-reset.
+- Chrome headless: login, dashboard multi-role dan daftar akun diperiksa pada desktop/ponsel; perbaikan override sidebar mencegah konten mobile menyempit.
+- Fixture akun/browser memakai silap_test dan dibersihkan; server pratinjau 8001 dihentikan.
+- Enam migration aplikasi berstatus Ran; sembilan role dan superadmin awal tersedia secara lokal.
+- Password bootstrap, .env, database, screenshot/profil browser, dependency dan plan tidak dimasukkan ke commit.
+
+Batas:
+- CI telah dikonfigurasi; hasil run remote dicatat setelah push.
+- Belum ada fitur akademik, enrollment, presensi, HR atau QR keterlambatan; tahap berikutnya fondasi akademik.
+- Tampilan audit akun belum diimplementasikan; rekaman audit sudah tersimpan untuk penelusuran.
+
+
 ### 2026-11-20 — Database pengembangan MySQL
 
 Changed:

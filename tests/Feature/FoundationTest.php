@@ -11,14 +11,10 @@ class FoundationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_home_renders_the_school_template_without_authentication(): void
+    public function test_guest_home_redirects_to_the_school_login_template(): void
     {
-        $this->withoutVite()
-            ->get(route('home'))
-            ->assertOk()
-            ->assertSee('Layanan Administrasi Sekolah')
-            ->assertSee('assets/vendor/css/rtl/core.css')
-            ->assertSee('Dalam persiapan');
+        $this->get('/')->assertRedirect(route('login'));
+        $this->get(route('login'))->assertOk()->assertSee('assets/vendor/css/rtl/core.css')->assertSee('Selamat datang kembali');
     }
 
     public function test_health_endpoint_is_available(): void
@@ -32,19 +28,19 @@ class FoundationTest extends TestCase
         $this->assertSame('id', config('app.locale'));
     }
 
-    public function test_default_seeding_does_not_create_example_accounts(): void
+    public function test_seeding_creates_nine_roles_idempotently_without_example_accounts(): void
     {
         $this->seed();
+        $this->seed();
         $this->assertDatabaseCount('users', 0);
+        $this->assertDatabaseCount('roles', 9);
     }
 
-    public function test_migrations_can_be_rolled_back_and_reapplied(): void
+    public function test_migrations_can_be_rolled_back_and_reapplied_on_the_isolated_database(): void
     {
         Artisan::call('migrate:rollback', ['--force' => true]);
         Artisan::call('migrate', ['--force' => true]);
-
-        $this->assertSame('sqlite', DB::connection()->getDriverName());
-        $this->assertSame(':memory:', DB::connection()->getDatabaseName());
+        $this->assertContains(DB::connection()->getDriverName(), ['sqlite', 'mysql']);
         $this->assertDatabaseCount('users', 0);
     }
 }

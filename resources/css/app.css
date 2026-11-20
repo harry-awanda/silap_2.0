@@ -1,16 +1,17 @@
-/* Tampilan dasar melanjutkan template Bootstrap/Sneat SILAP. */
-.silap-shell {
-    max-width: 960px;
+/* Melanjutkan tampilan template Bootstrap/Sneat SILAP. */
+.silap-shell { max-width: 960px; }
+.silap-auth { max-width: 480px; }
+.silap-sidebar { min-height: 100vh; }
+.silap-sidebar .app-brand-link { display: flex; }
+.silap-sidebar .menu-inner { flex-direction: column; }
+@media (min-width: 1200px) {
+    .silap-sidebar { position: fixed; }
+    .silap-layout-page { padding-left: 16.25rem; }
 }
-
-.silap-brand-mark {
-    align-items: center;
-    background: #e7e7ff;
-    border-radius: 1rem;
-    color: #696cff;
-    display: inline-flex;
-    font-size: 2rem;
-    height: 4rem;
-    justify-content: center;
-    width: 4rem;
+@media (max-width: 1199.98px) {
+    .silap-sidebar { width: 100%; height: auto !important; min-height: 0; flex: 0 0 auto; position: static !important; transform: none !important; }
+    .silap-sidebar .menu-inner { width: 100%; height: auto !important; min-height: 0; flex-grow: 0; }
+    .layout-container { flex-direction: column; }
+    .layout-wrapper .silap-layout-page { width: 100% !important; min-width: 0; max-width: 100%; flex: 1 1 auto; padding-left: 0 !important; }
+    .silap-sidebar .menu-item { width: 100% !important; }
 }

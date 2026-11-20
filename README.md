@@ -4,7 +4,7 @@ Rebuild SILAP untuk menyederhanakan administrasi siswa, penempatan akademik, pre
 
 Root Laravel lokal: **D:\.Learning\silap_v2.0**. Repository: [harry-awanda/silap_2.0](https://github.com/harry-awanda/silap_2.0), branch main. Nama folder lokal tetap silap_v2.0 sesuai persiapan awal.
 
-**Status 20 November 2026: tahap 1A selesai — skeleton Laravel dapat dijalankan langsung dari root, database pengembangan v2 terpisah, dan halaman awal memakai template SILAP.** Autentikasi, sembilan role, dashboard operasional dan fitur bisnis belum diimplementasikan. Tahap 1 keseluruhan belum selesai.
+**Status 20 November 2026: tahap 1B selesai secara implementasi lokal.** Login username, sembilan role tetap, superadmin awal, wajib ganti/reset password, akun nonaktif, dashboard multi-role dan pengelolaan akun tersedia. Workflow CI sudah disiapkan; hasil eksekusi GitHub dicatat setelah push. Fitur akademik/presensi/pembinaan belum dibangun.
 
 ## Fondasi yang tersedia
 
@@ -14,10 +14,10 @@ Root Laravel lokal: **D:\.Learning\silap_v2.0**. Repository: [harry-awanda/silap
 - Vite 8 dengan lockfile npm; tanpa Tailwind atau starter kit UI lain.
 - Locale id, fallback en, timezone Asia/Jakarta.
 - MySQL menjadi database pengembangan sesuai konfigurasi pengguna. Koneksi lokal silap_db terverifikasi dan seluruh migration fondasi sudah diterapkan. SQLite hanya dipakai untuk test in-memory; konfigurasi hosting produksi belum ditetapkan.
-- Migration infrastruktur bawaan Laravel untuk users/sessions, cache dan jobs. Schema autentikasi/role akan disesuaikan pada tahap 1B; belum ada tabel bisnis.
-- Seeder tidak membuat akun contoh. Login dan akun superadmin awal belum tersedia.
-- Route publik / untuk halaman persiapan dan /up untuk kesehatan aplikasi.
-- Lima test fondasi dengan SQLite in-memory; tidak memakai database operasional.
+- Enam migration: infrastruktur awal dan tambahan autentikasi, tabel Spatie Permission 8.5.0 serta account_audits. Username unik wajib, email opsional, status nonaktif dan penggantian password tercatat. Kolom verifikasi email/tabel reset via email yang tidak dipakai dikeluarkan lewat migration tambahan.
+- Seeder membuat sembilan role secara idempotent tanpa akun contoh/password default. Superadmin awal dibuat melalui CLI atau konfigurasi bootstrap opsional.
+- Route / mengarah ke /login atau /dashboard; /up tetap untuk kesehatan. Dashboard, ganti password dan pengelolaan akun dilindungi auth, status akun dan pemeriksaan sesi.
+- 34 test autentikasi/akun/fondasi, teruji pada SQLite in-memory dan MySQL silap_test yang terisolasi; tidak mereset database aplikasi.
 - plan/, .env, database SQLite lokal, vendor, node_modules dan hasil build tidak di-track Git.
 
 Sumber template: D:\.Learning\silap\public\assets. Hanya CSS dan font yang diperlukan disalin; foto siswa, storage dan konfigurasi environment lama tidak disalin. Lihat public/assets/NOTICE.md.
@@ -72,7 +72,34 @@ Untuk Composer XAMPP pada komputer ini bila zip belum aktif:
 
 Alternatif setup awal pada database kosong: salin .env.example ke .env, lalu composer run setup. Pastikan database MySQL sudah tersedia dan koneksi .env benar. Script menyiapkan key, menjalankan migration pada koneksi tersebut, memasang dependency npm dari lockfile, dan build aset; tidak membuat file SQLite. Gunakan pada proyek baru; key:generate bukan perintah pemeliharaan rutin untuk aplikasi yang sudah digunakan.
 
-Belum ada akun login setelah migrate --seed. Seeder role dan superadmin akan ditambahkan pada tahap 1B.
+## Akun superadmin awal
+
+Pada clone baru, migrate --seed membuat sembilan role tanpa password bawaan. Buat superadmin pertama dari terminal:
+
+    php artisan silap:superadmin
+
+Masukkan dan ulangi password saat diminta; input tidak ditampilkan. Opsi identitas tersedia: --username=superadmin, --name=Superadmin, --email=alamat@example.com. Alternatif --generate-password membuat password acak yang hanya dicetak oleh CLI; jangan menyalin hasilnya ke log/repository.
+
+Pada workspace lokal sesi pengembangan, akun superadmin awal sudah dibuat dengan username superadmin dan password sementara yang disampaikan terpisah. Password tidak ditulis dalam README/CHANGELOG/.env.example. Login pertama wajib menggantinya sebelum membuka dashboard.
+
+Bootstrap menolak membuat superadmin kedua jika sudah ada superadmin aktif dan tidak mengambil alih username akun lain. Untuk akun administrator berikutnya, gunakan Pengelolaan Akun setelah login.
+
+Alternatif instalasi otomatis: isi SUPERADMIN_USERNAME/NAME/EMAIL/PASSWORD di .env lokal lalu jalankan db:seed. Password wajib memenuhi aturan dan hanya dipakai untuk pembuatan awal. Seeder berulang tidak mereset password yang sudah ada. Konfigurasi password bootstrap dapat dikosongkan setelah akun dibuat.
+
+## Penggunaan autentikasi dan akun
+
+- Login menggunakan username (dinormalisasi menjadi huruf kecil), bukan email. Percobaan gagal dibatasi 5 per menit per username/IP.
+- Semua pengguna dapat mengganti password sendiri dengan password saat ini; password baru minimal 12 karakter dengan huruf besar/kecil dan angka.
+- Akun baru/reset harus mengganti password dahulu. Halaman ganti password dan logout tetap dapat diakses selama kewajiban ini.
+- Admin dan superadmin dapat membuat/mengubah akun serta menetapkan beberapa role. Admin tidak boleh memberi/mengubah akun superadmin.
+- Reset menghasilkan password sementara acak; hanya ditampilkan pada kunjungan berikutnya dan flash sesi menyimpannya terenkripsi. Berikan secara pribadi kepada pemilik akun.
+- Penonaktifan, reset password dan perubahan role mencabut sesi database akun terkait serta memutar token remember-me. Perubahan password sendiri mempertahankan sesi saat ini dan mencabut sesi lain; perubahan role sendiri mengharuskan login ulang.
+- Tidak ada penghapusan akun atau CRUD rename/delete role inti. Admin tidak dapat menonaktifkan diri atau mencabut role admin/superadmin miliknya; minimal satu administrator dan satu superadmin aktif dipertahankan.
+- Perubahan akun dicatat di account_audits tanpa password/hash. Pembacaan audit melalui UI belum tersedia.
+- Dashboard menggabungkan semua role pengguna dan tidak mengarahkan wali tanpa assignment ke halaman terlarang. Menu hanya menautkan fitur yang sudah dibangun.
+- Kapabilitas input keterlambatan tetap khusus guru_piket tanpa bypass superadmin; endpoint bisnis keterlambatan belum dibangun.
+
+Sesi aplikasi menggunakan SESSION_DRIVER=database. Jangan menggantinya tanpa menyesuaikan/menguji mekanisme pencabutan sesi pada layanan akun.
 
 ## Pengembangan frontend
 
@@ -108,11 +135,21 @@ Perintah yang dipakai:
     php artisan route:list
     npm run build
 
-Hasil tahap 1A: 5 test lulus (11 assertion), formatter lulus, manifest Composer valid, platform requirements terpenuhi, 3 migration berhasil, dan build Vite berhasil. HTTP halaman utama, kesehatan, seluruh CSS/font template yang dipakai, dan aset build merespons 200.
+Hasil terbaru tahap 1B: 34 test lulus dengan 188 assertion pada SQLite in-memory dan 34 test/188 assertion pada MySQL silap_test. Pint, validasi manifest Composer dan build Vite diperiksa sebelum commit. Enam migration sudah diterapkan pada MySQL aplikasi tanpa reset database.
 
-Pengujian mencakup halaman publik, endpoint kesehatan, locale/timezone, seeder tanpa akun contoh, serta rollback dan migrate ulang pada SQLite in-memory. Belum ada uji browser visual, performa produksi, atau pengujian fitur bisnis.
+Pengujian mencakup login/logout, pembatasan percobaan, password wajib, sesi lama, batas admin/superadmin, multi-role, bootstrap idempotent, filter/escaping UI dan migration ulang. Login, dashboard dan daftar akun diperiksa dengan Chrome headless pada viewport 1366x900 dan 390x844; sidebar mobile disesuaikan dan tidak ada overflow halaman. Fixture browser hanya pada database test dan sudah dibersihkan. Belum ada pengujian fitur bisnis/performa produksi.
 
 Peralihan ke MySQL: koneksi schema silap_db terverifikasi kosong sebelum migration; 3 migration fondasi diterapkan tanpa reset/fresh/rollback pada MySQL. Test tetap berjalan pada SQLite in-memory.
+
+### Pengujian MySQL dan CI
+
+Default php artisan test selalu memakai SQLite :memory:. Untuk pengujian MySQL, buat database silap_test khusus pengujian, gunakan kredensial lokal yang memiliki akses ke database itu, lalu:
+
+    php vendor/bin/phpunit --configuration phpunit.mysql.xml
+
+Konfigurasi tersebut memaksa nama database silap_test. TestCase menolak database selain SQLite :memory: atau MySQL silap_test sebelum RefreshDatabase berjalan. Isi database test dapat dihapus/migrasi ulang; jangan menaruh data operasional di sana.
+
+Workflow .github/workflows/ci.yml dijalankan pada push main dan pull request: test/format pada PHP 8.3 dan 8.5 dengan SQLite, regresi MySQL 8 pada service terpisah, serta build frontend pada Node 24. Kredensial service CI hanya berlaku pada container test sementara, bukan database lokal.
 
 ## Progres bertahap
 
@@ -120,7 +157,7 @@ Peralihan ke MySQL: koneksi schema silap_db terverifikasi kosong sebelum migrati
 | --- | --- | --- |
 | 0 | Analisis workflow, role dan audit schema | Draft tersedia; tinjauan keseluruhan masih berjalan |
 | 1A | Root Laravel, environment, database lokal, template awal dan pengujian | Selesai |
-| 1B | Auth username, sembilan role, akun nonaktif/reset, dashboard sesuai akses dan CI | Berikutnya |
+| 1B | Auth username, sembilan role, akun nonaktif/reset, dashboard sesuai akses dan CI | Implementasi lokal selesai; hasil CI mengikuti push |
 | 2 | Periode, kelas, guru minimal dan penugasan wali | Belum dimulai |
 | 3 | Siswa, akun, import/export, foto dan enrollment | Belum dimulai |
 | 4 | Presensi hadir, keterlambatan khusus guru piket tanpa QR, audit koreksi | Belum dimulai |
