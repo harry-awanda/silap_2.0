@@ -19,3 +19,13 @@
 /.vscode/
 npm-debug.log*
 yarn-error.log*
+
+# Database lokal dan artefak Laravel
+/database/*.sqlite
+/database/*.sqlite-*
+/storage/pail/
+/public/fonts-manifest.dev.json
+/.laravel-bootstrap/
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,16 @@
+/* Tampilan dasar melanjutkan template Bootstrap/Sneat SILAP. */
+.silap-shell {
+    max-width: 960px;
+}
+
+.silap-brand-mark {
+    align-items: center;
+    background: #e7e7ff;
+    border-radius: 1rem;
+    color: #696cff;
+    display: inline-flex;
+    font-size: 2rem;
+    height: 4rem;
+    justify-content: center;
+    width: 4rem;
+}

@@ -4,6 +4,40 @@ Semua perubahan minor, major, dan dokumentasi dicatat di sini. Tanggal mengikuti
 
 ## [Unreleased]
 
+### 2026-11-20 — Tahap 1A: root Laravel dan fondasi aplikasi
+
+Added:
+- Skeleton resmi Laravel langsung pada root silap_v2.0: artisan, app, bootstrap, config, database, routes, resources, public, storage dan tests.
+- Laravel Framework 13.43.0 dengan composer.lock; platform dependency PHP 8.3.0, teruji menggunakan runtime PHP 8.5.12.
+- Environment contoh SILAP, locale id/fallback en dan timezone Asia/Jakarta; database SQLite pengembangan terpisah pada database/database.sqlite.
+- Layout Blade dan halaman persiapan menggunakan CSS Bootstrap/Sneat serta Boxicons dari SILAP lama. NOTICE mencatat asal aset; font mirror diperbaiki ke WOFF2 lokal.
+- Vite 8.3.8, package-lock.json dan build CSS/JS tanpa Tailwind.
+- Lima test fondasi untuk halaman awal, kesehatan, konfigurasi, seeder kosong, serta rollback/migrate ulang pada database in-memory.
+
+Changed:
+- README kini berisi deskripsi kondisi aplikasi aktual, kebutuhan runtime, instalasi teruji, cara menjalankan, troubleshooting dan progres 1A/1B.
+- .gitignore melindungi plan/, .env, database SQLite/journal, dependency, log dan artefak build.
+- Seeder bawaan tidak membuat akun Test User. Paket dev Pail/Pao dan frontend yang belum digunakan tidak disertakan; composer run dev menjalankan server PHP.
+- Script setup memakai lockfile npm dan membuat file SQLite bila belum ada; script test kompatibel dengan Composer lokal.
+
+Validasi:
+- Dependency PHP dan npm terpasang; platform requirements terpenuhi dan composer validate --strict lulus.
+- 3 migration infrastruktur berhasil; seeder tidak membuat akun contoh.
+- php artisan test --compact: 5 passed, 11 assertions.
+- Pint lulus setelah normalisasi line ending pada tiga file baru; npm run build berhasil.
+- Smoke HTTP: /, /up, CSS template, Boxicons WOFF2 dan aset build merespons 200.
+- Tidak ada dependency bisnis Excel/PDF/permission yang dipasang sebelum modulnya dibangun.
+
+Catatan environment:
+- Composer 2.7.7 lokal mengeluarkan deprecation notice pada PHP 8.5; instalasi berhasil.
+- Ekstensi zip dimuat hanya untuk proses Composer melalui php -d extension=zip; php.ini global tidak diubah.
+
+Batas hasil:
+- Tahap 1 keseluruhan belum selesai: auth username, sembilan role, superadmin awal, dashboard operasional dan CI dilanjutkan pada tahap 1B.
+- Belum ada fitur bisnis, QR keterlambatan, HR atau impor database SILAP lama.
+- Belum ada pemeriksaan visual browser atau deployment produksi.
+
+
 ### 2026-11-20 — Remote GitHub dan baseline dokumentasi
 
 Changed:

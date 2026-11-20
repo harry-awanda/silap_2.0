@@ -1,103 +1,141 @@
 # SILAP v2.0
 
-Rebuild SILAP untuk menyederhanakan administrasi siswa, penempatan akademik, presensi, pembinaan, dan operasional piket. Nama proyek dan folder lokal: **silap_v2.0**. Repository GitHub yang ditetapkan pengguna: [harry-awanda/silap_2.0](https://github.com/harry-awanda/silap_2.0). Folder lokal tetap menggunakan nama semula; nama remote mengikuti URL yang diberikan.
+Rebuild SILAP untuk menyederhanakan administrasi siswa, penempatan akademik, presensi, pembinaan, dan operasional piket.
 
-**Status 20 November 2026: tahap 0 — analisis kode dan draft kerja selesai disusun; menunggu tinjauan pengguna. Folder ini belum berisi aplikasi Laravel yang dapat dijalankan.** Repository menggunakan branch main dan remote origin https://github.com/harry-awanda/silap_2.0.git. Baseline Git hanya berisi dokumentasi dan aturan ignore.
+Root Laravel lokal: **D:.Learningsilap_v2.0**. Repository: [harry-awanda/silap_2.0](https://github.com/harry-awanda/silap_2.0), branch main. Nama folder lokal tetap silap_v2.0 sesuai persiapan awal.
 
-## Keputusan dasar
+**Status 20 November 2026: tahap 1A selesai — skeleton Laravel dapat dijalankan langsung dari root, database pengembangan v2 terpisah, dan halaman awal memakai template SILAP.** Autentikasi, sembilan role, dashboard operasional dan fitur bisnis belum diimplementasikan. Tahap 1 keseluruhan belum selesai.
+
+## Fondasi yang tersedia
+
+- Laravel 13.43.0, PHP minimum 8.3; versi dependency pasti ada dalam composer.lock.
+- Resolusi dependency memakai platform PHP 8.3.0 agar tidak mengunci paket khusus PHP 8.5 hanya karena runtime lokal memakai PHP 8.5.
+- Blade dengan CSS Bootstrap/Sneat dan Boxicons dari SILAP lama. Aset minimum di public/assets; referensi font memakai WOFF2 lokal.
+- Vite 8 dengan lockfile npm; tanpa Tailwind atau starter kit UI lain.
+- Locale id, fallback en, timezone Asia/Jakarta.
+- SQLite khusus proyek pada database/database.sqlite untuk pengembangan awal. Database produksi belum dipilih.
+- Migration infrastruktur bawaan Laravel untuk users/sessions, cache dan jobs. Schema autentikasi/role akan disesuaikan pada tahap 1B; belum ada tabel bisnis.
+- Seeder tidak membuat akun contoh. Login dan akun superadmin awal belum tersedia.
+- Route publik / untuk halaman persiapan dan /up untuk kesehatan aplikasi.
+- Lima test fondasi dengan SQLite in-memory; tidak memakai database operasional.
+- plan/, .env, database SQLite lokal, vendor, node_modules dan hasil build tidak di-track Git.
+
+Sumber template: D:.Learningsilappublicassets. Hanya CSS dan font yang diperlukan disalin; foto siswa, storage dan konfigurasi environment lama tidak disalin. Lihat public/assets/NOTICE.md.
+
+## Keputusan workflow
 
 - Database baru dan kosong; tidak mengimpor database operasional SILAP lama.
-- Seluruh role yang ditemukan di sumber tetap dipertahankan: superadmin, admin, tata_usaha, guru, wali_kelas, guru_piket, guru_bk, kesiswaan, siswa.
-- Alur boleh dirombak. Rincian kewenangan baru masih merupakan rekomendasi untuk ditinjau, kecuali keputusan yang sudah ditetapkan pengguna.
-- Keterlambatan hanya diinput oleh pengguna dengan role guru_piket. QR keterlambatan dihapus; siswa tidak perlu login, membawa HP, memiliki paket internet, atau mengirim GPS untuk proses tersebut. Presensi mandiri hadir tetap terpisah.
-- UI tetap memakai template Blade/Bootstrap/Sneat dari SILAP lama, termasuk gaya, sidebar, navbar, tabel, dan komponen form.
-- Manajemen Kepegawaian tidak dibangun. Mutasi pegawai dan administrasi status pegawai diusulkan ikut dikeluarkan sebagai satu modul HR.
-- Data guru minimal untuk akun, wali kelas, jadwal piket, dan catatan KBM tetap diperlukan. Penghapusan HR tidak berarti penghapusan role guru.
-- Implementasi bertahap; setiap tahap memiliki hasil yang bisa diperiksa sebelum tahap berikutnya.
+- Sembilan role dipertahankan dalam rancangan: superadmin, admin, tata_usaha, guru, wali_kelas, guru_piket, guru_bk, kesiswaan, siswa.
+- Keterlambatan hanya diinput role guru_piket, tanpa QR keterlambatan dan tanpa login/HP/internet/GPS siswa. Guru piket memakai sesi dan koneksi aplikasinya sendiri.
+- Input keterlambatan: cari nama/NIS/filter kelas → pilih siswa → periksa tanggal/jam default → alasan opsional → simpan. Waktu datang dapat disesuaikan bila input tertunda; actor dan waktu pencatatan server tetap diaudit.
+- Record presensi yang sudah ada tidak ditimpa otomatis; gunakan koreksi beralasan. Admin/superadmin tanpa guru_piket tidak mendapat bypass input keterlambatan.
+- QR pribadi/Assetly dibahas terpisah. Presensi hadir mandiri tetap bagian rancangan.
+- Manajemen Kepegawaian tidak dibangun. Guru minimal untuk wali/piket dan catatan KBM tetap diperlukan; rincian batas HR lainnya masih mengikuti tinjauan.
+- Lifecycle siswa dan laporan dirancang menjaga histori; kelulusan tidak menghapus siswa beserta riwayat.
+- Implementasi bertahap; rincian kewenangan yang belum diputuskan tetap merupakan rekomendasi untuk ditinjau.
 
-## Hasil analisis awal
+## Kebutuhan lokal
 
-Sumber: D:\.Learning\silap, commit ceebec6, termasuk perubahan lokal yang belum di-commit saat analisis. Kode lama tidak diperbaiki atau dihapus dalam tahap ini. Analisis tidak membaca isi .env atau data operasional database.
+- PHP 8.3 atau lebih baru; teruji pada PHP 8.5.12.
+- Composer 2; gunakan versi yang kompatibel dengan PHP Anda.
+- Node.js ^20.19.0 atau >=22.12.0 sesuai Vite yang terpasang; teruji pada Node 24.16.0 dan npm 11.13.0.
+- Ekstensi PHP: PDO/pdo_sqlite untuk database lokal, mbstring, openssl, fileinfo, ctype, tokenizer, dom, xml, xmlwriter dan ekstensi standar framework.
+- zip disarankan untuk ekstraksi dependency Composer dan akan dibutuhkan modul Excel/ZIP pada tahap berikutnya.
 
-| Bagian | Rekomendasi |
+PHP lokal menyediakan php_zip.dll tetapi zip belum aktif pada php.ini. Instalasi dependency sesi ini menjalankan PHP dengan opsi -d extension=zip tanpa mengubah konfigurasi global. Jika Composer gagal mengekstrak arsip, aktifkan extension=zip pada php.ini CLI yang ditampilkan oleh php --ini, atau gunakan opsi tersebut untuk memanggil composer.phar.
+
+Composer lokal 2.7.7 menghasilkan deprecation notice pada PHP 8.5; instalasi tetap berhasil. Perbarui Composer sebelum memakai kombinasi ini untuk pekerjaan rutin. Tidak ada pengabaian platform requirement dalam instalasi proyek.
+
+## Instalasi lokal dari GitHub
+
+PowerShell:
+
+    git clone https://github.com/harry-awanda/silap_2.0.git silap_v2.0
+    Set-Location silap_v2.0
+    composer install
+    npm ci
+    Copy-Item .env.example .env
+    php artisan key:generate
+    New-Item -ItemType File -Path database/database.sqlite
+    php artisan migrate --seed
+    npm run build
+    php artisan serve --host=127.0.0.1 --port=8000
+
+Buka http://127.0.0.1:8000. Endpoint kesehatan: http://127.0.0.1:8000/up.
+
+Jika folder lokal sudah disiapkan pada sesi ini, .env, APP_KEY, dependency, database dan build sudah tersedia; cukup jalankan php artisan serve. Jangan menimpa .env atau database yang sudah ada ketika mengikuti ulang panduan.
+
+Untuk Composer XAMPP pada komputer ini bila zip belum aktif:
+
+    php -d extension=zip C:ProgramDataComposerSetupincomposer.phar install
+
+Alternatif setup awal pada database kosong: salin .env.example ke .env, lalu composer run setup. Script menyiapkan key, membuat file SQLite bila belum ada, menjalankan migration, memasang dependency npm dari lockfile, dan build aset. Gunakan pada proyek baru; key:generate bukan perintah pemeliharaan rutin untuk aplikasi yang sudah digunakan.
+
+Belum ada akun login setelah migrate --seed. Seeder role dan superadmin akan ditambahkan pada tahap 1B.
+
+## Pengembangan frontend
+
+Setelah build, halaman dapat dibuka tanpa server Vite. Untuk perubahan CSS/JS saat development, jalankan npm run dev pada terminal kedua sementara php artisan serve tetap aktif. composer run dev menjalankan server PHP; jalankan Vite terpisah bila diperlukan.
+
+Jika muncul Vite manifest not found, jalankan npm ci dan npm run build. Jika database file belum ada, buat database/database.sqlite lalu jalankan migration. Jika port 8000 dipakai aplikasi lain, pilih port lain pada artisan serve dan sesuaikan APP_URL bila diperlukan.
+
+## Konfigurasi
+
+| Key | Default pengembangan |
 | --- | --- |
-| Template UI, autentikasi, multi-role, periode, kelas, penugasan wali | Pertahankan konsep; rapikan implementasi dan otorisasi |
-| Import preview–commit, foto massal, laporan Excel/PDF | Pertahankan manfaat; satukan layanan dan validasi |
-| Penempatan, promosi, mutasi, kelulusan | Rancang ulang; satu sumber penempatan dan riwayat bertanggal |
-| Presensi mandiri hadir, pendataan keterlambatan oleh guru piket, koreksi wali | Tanpa QR keterlambatan; aturan waktu, konflik dan audit konsisten |
-| Pelanggaran/pembinaan | Satu kasus dengan tindak lanjut dan histori |
-| Kepegawaian | Keluarkan dari versi baru |
-| Face recognition, izin keluar, tabel alumni lama | Jangan salin tanpa kebutuhan fitur aktif yang terbukti |
+| APP_NAME | SILAP v2.0 |
+| APP_URL | http://127.0.0.1:8000 |
+| APP_TIMEZONE | Asia/Jakarta |
+| APP_LOCALE / APP_FALLBACK_LOCALE | id / en |
+| DB_CONNECTION | sqlite |
+| SESSION_DRIVER / CACHE_STORE | database / database |
+| QUEUE_CONNECTION | database; belum ada background job bisnis |
 
-Temuan prioritas: kelulusan lama menghapus siswa beserta histori; status hadir pada jalur mandiri tidak dihitung dari cutoff; sebagian koreksi tidak diaudit; laporan historis bergantung pada keanggotaan siswa saat ini; beberapa route masih menunjuk method yang tidak tersedia.
+SQLite default berada di database/database.sqlite. File database dan .env bersifat lokal, tidak ikut push. Jangan arahkan DB_DATABASE/DB_URL ke database SILAP lama.
 
-Biodata tambahan siswa sudah digunakan oleh form, import, dan export. Kolom tersebut tidak otomatis dianggap tidak terpakai. Audit membedakan penggunaan kode dari kebutuhan operasional yang masih perlu dikonfirmasi.
+## Validasi
 
-## Pendataan keterlambatan — keputusan revisi
+Perintah yang dipakai:
 
-Guru piket membuka Pendataan Keterlambatan → mencari siswa berdasarkan nama/NIS dengan filter kelas → memilih siswa → memeriksa tanggal/jam kedatangan yang terisi otomatis → menambahkan alasan bila tersedia → menyimpan. Jam kedatangan dapat disesuaikan jika pencatatan tertunda; waktu pencatatan server dan petugas tetap tersimpan untuk audit.
+    php artisan test --compact
+    php vendor/bin/pint --test
+    composer validate --strict
+    composer check-platform-reqs
+    php artisan migrate:status
+    php artisan route:list
+    npm run build
 
-Hasil masuk ke rekap presensi dan laporan keterlambatan. Presensi yang sudah ada menampilkan konflik dan memerlukan tindakan koreksi beralasan, bukan ditimpa otomatis. Endpoint input memeriksa role guru_piket; akun admin/superadmin tanpa role tersebut tidak mendapat pengecualian. Presensi mandiri setelah cutoff mengarahkan siswa melapor ke guru piket. QR pribadi/Assetly tidak termasuk penghapusan ini.
+Hasil tahap 1A: 5 test lulus (11 assertion), formatter lulus, manifest Composer valid, platform requirements terpenuhi, 3 migration berhasil, dan build Vite berhasil. HTTP halaman utama, kesehatan, seluruh CSS/font template yang dipakai, dan aset build merespons 200.
 
-## Rencana bertahap
+Pengujian mencakup halaman publik, endpoint kesehatan, locale/timezone, seeder tanpa akun contoh, serta rollback dan migrate ulang pada SQLite in-memory. Belum ada uji browser visual, performa produksi, atau pengujian fitur bisnis.
 
-| Tahap | Hasil yang ditinjau | Status |
+## Progres bertahap
+
+| Tahap | Hasil | Status |
 | --- | --- | --- |
-| 0 | Analisis, workflow, audit skema, draft modular | Dokumen tersedia; tinjauan pengguna belum dilakukan |
-| 1 | Fondasi Laravel, template UI, auth, role, konfigurasi, CI dasar | Belum dimulai |
-| 2 | Periode, kelas, guru minimal, penugasan wali | Belum dimulai |
-| 3 | Siswa, akun, import/export, foto, penempatan | Belum dimulai |
-| 4 | Presensi hadir, input keterlambatan khusus guru piket tanpa QR, koreksi dengan audit | Belum dimulai |
+| 0 | Analisis workflow, role dan audit schema | Draft tersedia; tinjauan keseluruhan masih berjalan |
+| 1A | Root Laravel, environment, database lokal, template awal dan pengujian | Selesai |
+| 1B | Auth username, sembilan role, akun nonaktif/reset, dashboard sesuai akses dan CI | Berikutnya |
+| 2 | Periode, kelas, guru minimal dan penugasan wali | Belum dimulai |
+| 3 | Siswa, akun, import/export, foto dan enrollment | Belum dimulai |
+| 4 | Presensi hadir, keterlambatan khusus guru piket tanpa QR, audit koreksi | Belum dimulai |
 | 5 | Promosi, pindah kelas, mutasi, kelulusan dan pembatalan aman | Belum dimulai |
 | 6 | Pembinaan, kegiatan pagi, agenda piket | Belum dimulai |
-| 7 | Laporan terpadu, struktur sekolah, media, QR pribadi/Assetly bila diperlukan | Belum dimulai |
-| 8 | Uji penerimaan dan persiapan deployment | Belum dimulai |
+| 7 | Laporan, struktur sekolah, media, QR pribadi/Assetly bila diperlukan | Belum dimulai |
+| 8 | Penerimaan dan deployment | Belum dimulai |
 
-Draft kerja lokal ada di berkas plan/00-index.md. Folder plan sengaja diabaikan Git sesuai permintaan dan tidak tersedia di GitHub atau hasil clone. Ringkasan keputusan dan progres penting harus tetap disalin ke README dan CHANGELOG supaya repository tetap dapat dipahami tanpa folder plan.
+Draft modular ada di plan/00-index.md pada workspace lokal. plan/ sengaja diabaikan Git dan tidak tersedia di hasil clone; keputusan/progres penting tetap diringkas di README dan CHANGELOG.
 
-## Instalasi — kondisi saat ini
+## Ringkasan analisis lama
 
-Saat ini cukup buka folder proyek dan baca dokumen. Jangan menjalankan composer install, artisan migrate, atau npm build di folder ini: manifest dan aplikasi belum dibuat.
+Analisis sumber SILAP pada commit ceebec6 beserta perubahan lokal menemukan penempatan ganda, histori yang dapat tersembunyi setelah promosi/mutasi, penghapusan histori saat kelulusan, aturan presensi yang berbeda antarjalur, dan route resource tanpa method.
 
-Untuk melanjutkan persiapan lokal:
+Baseline sumber lama: 46 migration, 53 controller, 224 route; 21 action tanpa method berdasarkan pemeriksaan statis. Dari 21 test lama, 2 error karena ZipArchive tidak tersedia. Hasil tersebut berbeda dari test fondasi v2 yang dijelaskan di atas.
 
-1. Buka PowerShell di folder D:\.Learning\silap_v2.0.
-2. Baca README, CHANGELOG, lalu plan/00-index.md.
-3. Tinjau pembagian kewenangan, batas HR, alur presensi, dan data siswa pada daftar keputusan.
-4. Implementasikan tahap 1 setelah hasil analisis ditinjau. Jangan menggunakan database SILAP lama sebagai database v2.
-
-## Panduan instalasi aplikasi — draft untuk tahap 1
-
-Bagian ini adalah urutan yang harus dilengkapi dan diuji setelah skeleton aplikasi tersedia, bukan langkah instalasi yang sudah tervalidasi.
-
-1. Tetapkan versi Laravel/PHP yang masih didukung dan cocok dengan paket Excel, PDF, permission, serta DataTables. Catat versi pasti dan commit lockfile.
-2. Siapkan PHP, Composer, database, Node.js/npm bila aset memakai Vite. Aktifkan ekstensi yang diperlukan, terutama zip, fileinfo, mbstring, XML dan PDO driver database.
-3. Clone repository dengan perintah berikut; argumen folder mempertahankan nama lokal silap_v2.0:
-
-   git clone https://github.com/harry-awanda/silap_2.0.git silap_v2.0
-   cd silap_v2.0
-
-   Hasil clone tahap ini hanya berisi README, CHANGELOG, dan .gitignore; lanjutkan langkah dependency setelah skeleton aplikasi tersedia.
-4. Jalankan composer install dan npm ci jika package-lock.json sudah disediakan.
-5. Salin .env.example menjadi .env; atur APP_NAME, APP_URL, APP_TIMEZONE=Asia/Jakarta dan koneksi database khusus v2.
-6. Generate APP_KEY. Buat database v2 kosong, lalu jalankan migration dan seeder role serta superadmin awal.
-7. Konfigurasi penyimpanan media. File privat menggunakan endpoint yang memeriksa hak akses; aset template tetap publik.
-8. Build aset, jalankan aplikasi, lalu uji login dan setup periode dari database kosong.
-9. README harus diperbarui dengan perintah yang benar-benar sudah diuji, kebutuhan ekstensi, seed akun awal, dan troubleshooting.
-
-Pemilihan versi framework dan database belum dikunci pada tahap analisis. Rekomendasi arsitektur: monolit modular Laravel + Blade, satu database lokal aplikasi, tanpa layanan master terpisah. Tidak ada alasan dari analisis ini untuk menghidupkan kembali dependensi silap-master.
-
-## Validasi sumber lama
-
-- php artisan route:list --except-vendor --json: berhasil, 224 route.
-- Pemeriksaan statis method action: 21 route mengarah ke method yang tidak ditemukan pada controller terkait.
-- php vendor/phpunit/phpunit/phpunit --do-not-cache-result: 21 test, 75 assertion, 2 error karena ZipArchive tidak tersedia; 19 test selesai tanpa error.
-- Runtime CLI yang dipakai: PHP 8.5.12. Hasil ini bukan bukti kompatibilitas deployment v2.
-- Belum dilakukan pengujian UI melalui browser, profiling beban, inspeksi database aktual, atau uji integrasi Assetly.
-- Aplikasi v2 belum dibuat, sehingga belum ada test runtime v2.
+Rincian biodata siswa sudah dipakai form/import/export; tidak langsung dianggap tidak terpakai. Tabel face recognition, izin keluar dan alumni lama tidak disalin tanpa kebutuhan fitur yang dikonfirmasi.
 
 ## Disiplin perubahan
 
-Setiap perubahan minor maupun major harus dicatat dalam CHANGELOG.md pada sesi yang sama: apa yang berubah, alasan, dampak, dan cara validasi. README diperbarui jika progres, dependensi, konfigurasi, instalasi, atau perilaku aplikasi berubah. Perubahan dokumen plan lokal juga diringkas dalam CHANGELOG meskipun file plan tidak di-track.
+Setiap perubahan minor/major dicatat dalam CHANGELOG pada sesi yang sama. README diperbarui mengikuti progres, konfigurasi dan instalasi yang sudah diuji. Schema berikutnya dirancang per domain; tidak menyalin 46 migration lama.
 
-Tidak ada migrasi data lama atau deployment aplikasi dalam tahap 0. Sinkronisasi GitHub pada tahap ini hanya untuk baseline dokumentasi; plan/ tetap lokal.
+Tidak ada migrasi data lama atau deployment produksi. Pilihan Laravel 13 mengacu [support policy resmi](https://laravel.com/framework/docs/13.x/releases); kompatibilitas paket fitur tambahan diperiksa saat modul tersebut dibangun.
