@@ -4,6 +4,13 @@ Semua perubahan minor, major, dan dokumentasi dicatat di sini. Tanggal mengikuti
 
 ## [Unreleased]
 
+### 2026-11-20 — Verifikasi CI tahap 1B
+
+- Implementasi 58d4842 sudah di-push; GitHub Actions run 44714647355 menunjukkan seluruh job sukses: sqlite (8.3), sqlite (8.5), dan mysql.
+- Pemeriksaan remote mencakup test, formatter, dependency dan build frontend sesuai workflow.
+- README serta progres lokal diperbarui dari menunggu hasil CI menjadi lulus. Tidak ada perubahan kode runtime pada pembaruan catatan ini.
+
+
 ### 2026-11-20 — Tahap 1B: autentikasi, role dan pengelolaan akun
 
 Added:
@@ -35,7 +42,7 @@ Validasi lokal:
 - Password bootstrap, .env, database, screenshot/profil browser, dependency dan plan tidak dimasukkan ke commit.
 
 Batas:
-- CI telah dikonfigurasi; hasil run remote dicatat setelah push.
+- CI implementasi 58d4842 lulus pada GitHub Actions run 44714647355; rincian tercatat pada verifikasi CI di atas.
 - Belum ada fitur akademik, enrollment, presensi, HR atau QR keterlambatan; tahap berikutnya fondasi akademik.
 - Tampilan audit akun belum diimplementasikan; rekaman audit sudah tersimpan untuk penelusuran.
 

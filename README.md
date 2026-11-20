@@ -4,7 +4,7 @@ Rebuild SILAP untuk menyederhanakan administrasi siswa, penempatan akademik, pre
 
 Root Laravel lokal: **D:\.Learning\silap_v2.0**. Repository: [harry-awanda/silap_2.0](https://github.com/harry-awanda/silap_2.0), branch main. Nama folder lokal tetap silap_v2.0 sesuai persiapan awal.
 
-**Status 20 November 2026: tahap 1B selesai secara implementasi lokal.** Login username, sembilan role tetap, superadmin awal, wajib ganti/reset password, akun nonaktif, dashboard multi-role dan pengelolaan akun tersedia. Workflow CI sudah disiapkan; hasil eksekusi GitHub dicatat setelah push. Fitur akademik/presensi/pembinaan belum dibangun.
+**Status 20 November 2026: tahap 1B selesai dan CI lulus.** Login username, sembilan role tetap, superadmin awal, wajib ganti/reset password, akun nonaktif, dashboard multi-role dan pengelolaan akun tersedia. CI implementasi 58d4842 lulus pada seluruh job SQLite/PHP 8.3+8.5, MySQL, formatter dan build frontend. Fitur akademik/presensi/pembinaan belum dibangun.
 
 ## Fondasi yang tersedia
 
@@ -151,13 +151,15 @@ Konfigurasi tersebut memaksa nama database silap_test. TestCase menolak database
 
 Workflow .github/workflows/ci.yml dijalankan pada push main dan pull request: test/format pada PHP 8.3 dan 8.5 dengan SQLite, regresi MySQL 8 pada service terpisah, serta build frontend pada Node 24. Kredensial service CI hanya berlaku pada container test sementara, bukan database lokal.
 
+Bukti CI implementasi: [Laravel CI untuk commit 58d4842](https://github.com/harry-awanda/silap_2.0/actions/runs/44714647355), seluruh tiga job sukses.
+
 ## Progres bertahap
 
 | Tahap | Hasil | Status |
 | --- | --- | --- |
 | 0 | Analisis workflow, role dan audit schema | Draft tersedia; tinjauan keseluruhan masih berjalan |
 | 1A | Root Laravel, environment, database lokal, template awal dan pengujian | Selesai |
-| 1B | Auth username, sembilan role, akun nonaktif/reset, dashboard sesuai akses dan CI | Implementasi lokal selesai; hasil CI mengikuti push |
+| 1B | Auth username, sembilan role, akun nonaktif/reset, dashboard sesuai akses dan CI | Selesai; CI lulus |
 | 2 | Periode, kelas, guru minimal dan penugasan wali | Belum dimulai |
 | 3 | Siswa, akun, import/export, foto dan enrollment | Belum dimulai |
 | 4 | Presensi hadir, keterlambatan khusus guru piket tanpa QR, audit koreksi | Belum dimulai |
