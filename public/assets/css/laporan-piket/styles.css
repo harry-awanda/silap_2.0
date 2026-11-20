@@ -1,0 +1,144 @@
+@page {
+    size: 210mm 330mm;
+    /* margin: 20px; Mengatur margin sempit (narrow) untuk semua sisi */
+    margin: 3mm 15mm 10mm 15mm;
+    /* Atas 15px, Kanan 15px, Bawah 10px, Kiri 15px */
+}
+
+.scale-wrap {
+  padding-top: 3mm;  /* dorong konten turun sedikit */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    margin: 0;
+    position: static;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+/* Style for tables with borders */
+
+.table-border {
+    border: 1px solid black;
+}
+
+.table-border th,
+.table-border td {
+    border: 1px solid black;
+}
+
+/* Style for tables without borders */
+
+.table-borderless {
+    border: none;
+}
+
+.table-borderless th,
+.table-borderless td {
+    border: none;
+}
+
+/* Override table-borderless for child tables */
+
+.table-borderless .table-border {
+    border: 1px solid black;
+}
+
+.table-borderless .table-border th,
+.table-borderless .table-border td {
+    border: 1px solid black;
+}
+
+.center-text {
+    text-align: center;
+}
+
+th,
+td {
+    padding: 5px;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.signature {
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.signature div {
+    text-align: center;
+    width: 40%;
+}
+
+.signature .line {
+    border-top: 1px solid black;
+    margin-top: 50px;
+}
+
+/* ===== RUANG TANDA TANGAN ===== */
+.sig-pad {
+    height: 10mm;              /* UBAH: 30–35mm jika perlu */
+    vertical-align: bottom;
+}
+
+/* Kepala sekolah */
+.signature-space {
+    height: 10mm;              /* UBAH: 35–40mm jika perlu */
+}
+
+.kop-surat {
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 3mm;
+}
+
+.kop-surat img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ========================= ABSENSI (3 kolom sejajar) ========================= */
+
+.columns {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    /* bantu stabilkan lebar kolom di Dompdf */
+}
+
+.columns td {
+    vertical-align: top;
+    /* KUNCI: semua kolom rata atas */
+}
+
+.col-43 {
+    width: 43%;
+    padding-right: 8px;
+}
+
+.col-14 {
+    width: 14%;
+    /* kolom rekap kecil */
+}
+
+.child-table {
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: avoid;
+    /* cegah tabel terpotong di tengah halaman */
+}

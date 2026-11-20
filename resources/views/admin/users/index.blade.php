@@ -4,7 +4,9 @@
   <div class="d-flex flex-wrap justify-content-between gap-2 mb-4">
     <h1 class="h3 mb-0">Pengelolaan Akun</h1>
     @can ('create', \App\Models\User::class)
-      <a href="{{ route('users.create') }}" class="btn btn-primary">Tambah Akun</a>
+      <a href="{{ route('users.create') }}" class="btn btn-primary"
+        ><i class="bx bx-plus me-2" aria-hidden="true"></i>Tambah Akun</a
+      >
     @endcan
   </div>
   @if (session('temporary_password'))
@@ -18,6 +20,10 @@
     </div>
   @endif
   <div class="card mb-4">
+    <div class="card-header">
+      <h2 class="h5 mb-1">Filter akun</h2>
+      <p class="text-muted mb-0">Temukan pengguna berdasarkan nama, role, atau status akses.</p>
+    </div>
     <div class="card-body">
       <form method="GET" action="{{ route('users.index') }}" class="row g-3">
         <div class="col-lg-5">
@@ -44,14 +50,20 @@
           </select>
         </div>
         <div class="col-lg-2 d-flex align-items-end">
-          <button class="btn btn-outline-primary w-100" type="submit">Terapkan</button>
+          <button class="btn btn-primary w-100" type="submit">
+            <i class="bx bx-filter-alt me-2" aria-hidden="true"></i>Terapkan
+          </button>
         </div>
       </form>
     </div>
   </div>
   <div class="card">
+    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <h2 class="h5 mb-0">Daftar pengguna</h2>
+      <span class="badge bg-label-primary">{{ $users->total() }} akun</span>
+    </div>
     <div class="table-responsive">
-      <table class="table mb-0">
+      <table class="table table-hover silap-account-table mb-0">
         <caption class="px-3">
           Daftar akun pengguna sekolah
         </caption>

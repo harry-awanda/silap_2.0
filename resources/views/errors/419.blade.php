@@ -1,0 +1,1 @@
+@extends ('errors.layout', ['code' =>'419','heading' =>'Sesi halaman berakhir','description' =>'Muat ulang halaman sebelum mengirim formulir kembali. Silakan masuk lagi jika sesi akun telah berakhir.'])

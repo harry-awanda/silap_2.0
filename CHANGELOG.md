@@ -4,6 +4,20 @@ Semua perubahan minor, major, dan dokumentasi dicatat di sini. Tanggal mengikuti
 
 ## [Unreleased]
 
+### 2026-11-20 ? Implementasi UI Sneat lengkap
+
+- Menyalin seluruh bundle 685 file public/assets dari SILAP lama; mempertahankan struktur direktori dan perbaikan font Boxicons WOFF2 lokal.
+- Memisahkan layout Blade base/auth/app serta sidebar/navbar/footer mengikuti markup Sneat sumber. Menghapus override layout responsif sementara agar sidebar menggunakan perilaku template asli.
+- Menerapkan UI login, password awal/biasa, dashboard multi-role, daftar/filter/tambah/ubah akun dan halaman error 403/404/419/429/500/503.
+- Memuat helper/config serta vendor inti berurutan; plugin tambahan tersedia tetapi hanya dimuat ketika dibutuhkan. Tidak mengaktifkan customizer demo atau menggandakan vendor melalui Vite.
+- Menambahkan komponen password dengan tombol tampil/sembunyikan, skip link, dropdown akun, serta modal konfirmasi reset/nonaktif. Policy, route, pencabutan sesi dan audit tetap menggunakan implementasi yang sudah ada.
+- Memperbarui NOTICE aset, README, rencana integrasi Sneat dan progres lokal; coding style tetap 2 spasi dan kurung sejajar.
+- Validasi: SQLite dan MySQL terisolasi masing-masing 34 test/188 assertion lulus; kompilasi Blade, build Vite dan pemeriksaan PHP/frontend lulus. Browser desktop/mobile tanpa overflow halaman, error JavaScript atau kegagalan pemuatan aset pada skenario yang diperiksa.
+- Browser memeriksa sidebar buka/tutup, dropdown, toggle password, batal/konfirmasi reset, wajib ganti password dan logout. Fixture preview dibersihkan dari silap_test dan server preview dihentikan.
+
+Batas tahap: integrasi UI halaman yang sudah tersedia; modul akademik dan fitur bisnis lainnya belum dibangun.
+
+
 ### 2026-11-20 ? Coding style 2 spasi dan kurung sejajar
 
 - Menerapkan keputusan pengguna D12: indentasi 2 spasi tanpa tab dan kurung pembuka pada baris deklarasi/kondisi, termasuk class, method dan closure.

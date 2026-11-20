@@ -10,7 +10,7 @@ Root Laravel lokal: **D:\.Learning\silap_v2.0**. Repository: [harry-awanda/silap
 
 - Laravel 13.43.0, PHP minimum 8.3; versi dependency pasti ada dalam composer.lock.
 - Resolusi dependency memakai platform PHP 8.3.0 agar tidak mengunci paket khusus PHP 8.5 hanya karena runtime lokal memakai PHP 8.5.
-- Blade dengan CSS Bootstrap/Sneat dan Boxicons dari SILAP lama. Aset minimum di public/assets; referensi font memakai WOFF2 lokal.
+- Blade memakai bundle Sneat lengkap dari SILAP lama (685 file sumber), layout autentikasi dan vertical menu bawaan. Referensi Boxicons memakai WOFF2 lokal yang sudah diperbaiki.
 - Vite 8 dengan lockfile npm; tanpa Tailwind atau starter kit UI lain.
 - Locale id, fallback en, timezone Asia/Jakarta.
 - MySQL menjadi database pengembangan sesuai konfigurasi pengguna. Koneksi lokal silap_db terverifikasi dan seluruh migration fondasi sudah diterapkan. SQLite hanya dipakai untuk test in-memory; konfigurasi hosting produksi belum ditetapkan.
@@ -20,11 +20,11 @@ Root Laravel lokal: **D:\.Learning\silap_v2.0**. Repository: [harry-awanda/silap
 - 34 test autentikasi/akun/fondasi, teruji pada SQLite in-memory dan MySQL silap_test yang terisolasi; tidak mereset database aplikasi.
 - plan/, .env, database SQLite lokal, vendor, node_modules dan hasil build tidak di-track Git.
 
-Sumber template: D:\.Learning\silap\public\assets. Pada fondasi awal baru CSS/font minimum yang disalin; lihat public/assets/NOTICE.md.
+Sumber template: D:\.Learning\silap\public\assets. Seluruh bundle sekarang tersedia; asal aset dan pengecualian perbaikan font dicatat di public/assets/NOTICE.md.
 
 Keputusan UI terbaru: gunakan bundle Sneat yang sudah tersedia dengan menyalin seluruh isi public/assets SILAP lama ke public/assets v2, termasuk css, js, vendor dan img. Blade diimplementasikan ulang memakai struktur HTML/layout/komponen template yang ada, lalu disesuaikan dengan route, data dan policy v2. Tidak perlu membuat ulang desain atau replika CSS/JS Sneat.
 
-Integrasi bundle lengkap dan penyesuaian Blade menjadi paket UI berikutnya; belum dilakukan pada perubahan dokumentasi ini. Vendor yang tersedia tetap dimuat sesuai kebutuhan halaman, dengan urutan dependensi template dan tanpa duplikasi melalui Vite.
+Integrasi bundle lengkap sudah diterapkan pada login, wajib/ganti password, dashboard, daftar/tambah/ubah akun, navigasi, modal konfirmasi serta halaman error 403/404/419/429/500/503. Sidebar responsif, dropdown akun dan komponen Bootstrap/Sneat menggunakan script template asli. Vendor tambahan dimuat hanya sesuai kebutuhan, tanpa duplikasi melalui Vite.
 
 ## Keputusan workflow
 
@@ -126,6 +126,18 @@ Jika muncul Vite manifest not found, jalankan npm ci dan npm run build. Setelah 
 | QUEUE_CONNECTION | database; belum ada background job bisnis |
 
 Konfigurasi MySQL aktual tetap pada .env lokal dan tidak ikut push. SQLite awal di database/database.sqlite tidak lagi dipakai oleh aplikasi dan tetap diabaikan Git. Test memaksa DB_CONNECTION=sqlite, DB_DATABASE=:memory: dan DB_URL kosong agar tidak menjalankan migration/rollback pada MySQL. Jangan arahkan DB_DATABASE/DB_URL ke database SILAP lama.
+
+## UI Sneat
+
+- Layout bersama berada di resources/views/layouts: base, auth, app, sidebar, navbar dan footer. Menu mengikuti policy akun dan hanya menautkan fitur yang sudah dibangun.
+- Login dan wajib ganti password memakai authentication-basic; perubahan password biasa memakai layout aplikasi.
+- Dashboard menampilkan role aktual pengguna, shortcut akun sesuai izin dan ilustrasi template; belum menampilkan statistik fitur bisnis.
+- Pengelolaan akun memakai card/filter/table/form Sneat; tabel bergeser di dalam card pada layar kecil. Reset/nonaktif menggunakan modal konfirmasi Bootstrap sebelum POST/PATCH.
+- Tombol tampilkan password memiliki label dan status aksesibilitas. Layout menyediakan skip link ke konten utama; viewport tetap mengizinkan zoom.
+- Halaman error memakai ilustrasi Sneat dan pesan yang tidak mengungkap detail exception.
+- Tidak ada kebutuhan instalasi tambahan: composer install, npm ci dan npm run build tetap berlaku. Aset template tersedia dalam Git; font ikon lokal tidak memerlukan CDN.
+
+Pemeriksaan Chrome headless mencakup viewport 1366x900 dan 390x844 untuk login, dashboard, daftar/form akun dan password; juga sidebar mobile, dropdown, toggle password, batal/konfirmasi reset, wajib ganti password dan logout. Tidak ada error JavaScript atau HTTP aset yang gagal pada halaman yang diuji. Fixture browser hanya pada silap_test dan dibersihkan setelah pengujian.
 
 ## Coding style
 
