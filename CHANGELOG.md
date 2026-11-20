@@ -4,6 +4,27 @@ Semua perubahan minor, major, dan dokumentasi dicatat di sini. Tanggal mengikuti
 
 ## [Unreleased]
 
+### 2026-11-20 — Database pengembangan MySQL
+
+Changed:
+- Mengikuti konfigurasi MySQL pada .env yang diperbarui pengguna; .env tidak diubah atau dipublikasikan.
+- .env.example dan fallback koneksi database memakai MySQL dengan contoh silap_db.
+- Script composer setup tidak lagi membuat file SQLite; database MySQL disiapkan lebih dahulu.
+- README dan progres lokal diselaraskan dengan MySQL; SQLite dipertahankan hanya sebagai database test in-memory dan file awal tidak dihapus.
+- Memperbaiki penulisan path Windows pada README/NOTICE yang kehilangan pemisah direktori saat penulisan sebelumnya.
+
+Validasi:
+- Koneksi efektif MySQL berhasil; schema silap_db dipastikan kosong melalui information_schema sebelum mutation.
+- Ketiga migration fondasi diterapkan dengan migrate --seed; migrate:status menunjukkan seluruhnya Ran.
+- Tidak menjalankan migrate:fresh, reset, atau rollback pada MySQL. Seeder tidak membuat akun contoh.
+- Konfigurasi PHPUnit tetap memaksa SQLite :memory: dan mengosongkan DB_URL; 5 test (11 assertion), Pint dan Composer validate lulus. HTTP / dan /up kembali 200 setelah server pengembangan dimuat ulang.
+- Pemeriksaan akhir: koneksi tetap MySQL, migration berjumlah 3 dan akun users tetap 0 setelah test. Test tidak memigrasikan/mereset MySQL.
+
+Batas hasil:
+- Perubahan ini menyesuaikan database fondasi; auth/role dan fitur bisnis tetap pekerjaan tahap 1B berikutnya.
+- Server pengembangan yang sebelumnya dijalankan oleh sesi agen dimuat ulang karena masih mewarisi driver SQLite; server/layanan lain, konfigurasi PHP global dan database SILAP lama tidak diubah.
+
+
 ### 2026-11-20 — Tahap 1A: root Laravel dan fondasi aplikasi
 
 Added:

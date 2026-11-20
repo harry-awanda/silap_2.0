@@ -2,7 +2,7 @@
 
 Rebuild SILAP untuk menyederhanakan administrasi siswa, penempatan akademik, presensi, pembinaan, dan operasional piket.
 
-Root Laravel lokal: **D:.Learningsilap_v2.0**. Repository: [harry-awanda/silap_2.0](https://github.com/harry-awanda/silap_2.0), branch main. Nama folder lokal tetap silap_v2.0 sesuai persiapan awal.
+Root Laravel lokal: **D:\.Learning\silap_v2.0**. Repository: [harry-awanda/silap_2.0](https://github.com/harry-awanda/silap_2.0), branch main. Nama folder lokal tetap silap_v2.0 sesuai persiapan awal.
 
 **Status 20 November 2026: tahap 1A selesai — skeleton Laravel dapat dijalankan langsung dari root, database pengembangan v2 terpisah, dan halaman awal memakai template SILAP.** Autentikasi, sembilan role, dashboard operasional dan fitur bisnis belum diimplementasikan. Tahap 1 keseluruhan belum selesai.
 
@@ -13,14 +13,14 @@ Root Laravel lokal: **D:.Learningsilap_v2.0**. Repository: [harry-awanda/silap_2
 - Blade dengan CSS Bootstrap/Sneat dan Boxicons dari SILAP lama. Aset minimum di public/assets; referensi font memakai WOFF2 lokal.
 - Vite 8 dengan lockfile npm; tanpa Tailwind atau starter kit UI lain.
 - Locale id, fallback en, timezone Asia/Jakarta.
-- SQLite khusus proyek pada database/database.sqlite untuk pengembangan awal. Database produksi belum dipilih.
+- MySQL menjadi database pengembangan sesuai konfigurasi pengguna. Koneksi lokal silap_db terverifikasi dan seluruh migration fondasi sudah diterapkan. SQLite hanya dipakai untuk test in-memory; konfigurasi hosting produksi belum ditetapkan.
 - Migration infrastruktur bawaan Laravel untuk users/sessions, cache dan jobs. Schema autentikasi/role akan disesuaikan pada tahap 1B; belum ada tabel bisnis.
 - Seeder tidak membuat akun contoh. Login dan akun superadmin awal belum tersedia.
 - Route publik / untuk halaman persiapan dan /up untuk kesehatan aplikasi.
 - Lima test fondasi dengan SQLite in-memory; tidak memakai database operasional.
 - plan/, .env, database SQLite lokal, vendor, node_modules dan hasil build tidak di-track Git.
 
-Sumber template: D:.Learningsilappublicassets. Hanya CSS dan font yang diperlukan disalin; foto siswa, storage dan konfigurasi environment lama tidak disalin. Lihat public/assets/NOTICE.md.
+Sumber template: D:\.Learning\silap\public\assets. Hanya CSS dan font yang diperlukan disalin; foto siswa, storage dan konfigurasi environment lama tidak disalin. Lihat public/assets/NOTICE.md.
 
 ## Keputusan workflow
 
@@ -39,7 +39,7 @@ Sumber template: D:.Learningsilappublicassets. Hanya CSS dan font yang diperluka
 - PHP 8.3 atau lebih baru; teruji pada PHP 8.5.12.
 - Composer 2; gunakan versi yang kompatibel dengan PHP Anda.
 - Node.js ^20.19.0 atau >=22.12.0 sesuai Vite yang terpasang; teruji pada Node 24.16.0 dan npm 11.13.0.
-- Ekstensi PHP: PDO/pdo_sqlite untuk database lokal, mbstring, openssl, fileinfo, ctype, tokenizer, dom, xml, xmlwriter dan ekstensi standar framework.
+- Ekstensi PHP: PDO/pdo_mysql untuk MySQL lokal, pdo_sqlite untuk pengujian in-memory, mbstring, openssl, fileinfo, ctype, tokenizer, dom, xml, xmlwriter dan ekstensi standar framework.
 - zip disarankan untuk ekstraksi dependency Composer dan akan dibutuhkan modul Excel/ZIP pada tahap berikutnya.
 
 PHP lokal menyediakan php_zip.dll tetapi zip belum aktif pada php.ini. Instalasi dependency sesi ini menjalankan PHP dengan opsi -d extension=zip tanpa mengubah konfigurasi global. Jika Composer gagal mengekstrak arsip, aktifkan extension=zip pada php.ini CLI yang ditampilkan oleh php --ini, atau gunakan opsi tersebut untuk memanggil composer.phar.
@@ -47,6 +47,8 @@ PHP lokal menyediakan php_zip.dll tetapi zip belum aktif pada php.ini. Instalasi
 Composer lokal 2.7.7 menghasilkan deprecation notice pada PHP 8.5; instalasi tetap berhasil. Perbarui Composer sebelum memakai kombinasi ini untuk pekerjaan rutin. Tidak ada pengabaian platform requirement dalam instalasi proyek.
 
 ## Instalasi lokal dari GitHub
+
+Siapkan database MySQL khusus v2 terlebih dahulu. Setelah menyalin .env.example, sesuaikan DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME dan DB_PASSWORD dengan MySQL lokal sebelum menjalankan migration. Contoh .env.example memakai silap_db; jangan memakai database SILAP lama.
 
 PowerShell:
 
@@ -56,7 +58,6 @@ PowerShell:
     npm ci
     Copy-Item .env.example .env
     php artisan key:generate
-    New-Item -ItemType File -Path database/database.sqlite
     php artisan migrate --seed
     npm run build
     php artisan serve --host=127.0.0.1 --port=8000
@@ -67,9 +68,9 @@ Jika folder lokal sudah disiapkan pada sesi ini, .env, APP_KEY, dependency, data
 
 Untuk Composer XAMPP pada komputer ini bila zip belum aktif:
 
-    php -d extension=zip C:ProgramDataComposerSetupincomposer.phar install
+    php -d extension=zip C:\ProgramData\ComposerSetup\bin\composer.phar install
 
-Alternatif setup awal pada database kosong: salin .env.example ke .env, lalu composer run setup. Script menyiapkan key, membuat file SQLite bila belum ada, menjalankan migration, memasang dependency npm dari lockfile, dan build aset. Gunakan pada proyek baru; key:generate bukan perintah pemeliharaan rutin untuk aplikasi yang sudah digunakan.
+Alternatif setup awal pada database kosong: salin .env.example ke .env, lalu composer run setup. Pastikan database MySQL sudah tersedia dan koneksi .env benar. Script menyiapkan key, menjalankan migration pada koneksi tersebut, memasang dependency npm dari lockfile, dan build aset; tidak membuat file SQLite. Gunakan pada proyek baru; key:generate bukan perintah pemeliharaan rutin untuk aplikasi yang sudah digunakan.
 
 Belum ada akun login setelah migrate --seed. Seeder role dan superadmin akan ditambahkan pada tahap 1B.
 
@@ -77,7 +78,7 @@ Belum ada akun login setelah migrate --seed. Seeder role dan superadmin akan dit
 
 Setelah build, halaman dapat dibuka tanpa server Vite. Untuk perubahan CSS/JS saat development, jalankan npm run dev pada terminal kedua sementara php artisan serve tetap aktif. composer run dev menjalankan server PHP; jalankan Vite terpisah bila diperlukan.
 
-Jika muncul Vite manifest not found, jalankan npm ci dan npm run build. Jika database file belum ada, buat database/database.sqlite lalu jalankan migration. Jika port 8000 dipakai aplikasi lain, pilih port lain pada artisan serve dan sesuaikan APP_URL bila diperlukan.
+Jika muncul Vite manifest not found, jalankan npm ci dan npm run build. Setelah mengubah .env, muat ulang server pengembangan agar tidak memakai driver lama. Jika MySQL menolak koneksi, pastikan server aktif, database tersedia dan kredensial .env sesuai; jalankan php artisan config:clear jika ada cache konfigurasi, lalu php artisan migrate:status. Jika port 8000 dipakai aplikasi lain, pilih port lain pada artisan serve dan sesuaikan APP_URL bila diperlukan.
 
 ## Konfigurasi
 
@@ -87,11 +88,13 @@ Jika muncul Vite manifest not found, jalankan npm ci dan npm run build. Jika dat
 | APP_URL | http://127.0.0.1:8000 |
 | APP_TIMEZONE | Asia/Jakarta |
 | APP_LOCALE / APP_FALLBACK_LOCALE | id / en |
-| DB_CONNECTION | sqlite |
+| DB_CONNECTION | mysql |
+| DB_HOST / DB_PORT | 127.0.0.1 / 3306 (contoh; sesuaikan lokal) |
+| DB_DATABASE | silap_db (contoh database khusus v2) |
 | SESSION_DRIVER / CACHE_STORE | database / database |
 | QUEUE_CONNECTION | database; belum ada background job bisnis |
 
-SQLite default berada di database/database.sqlite. File database dan .env bersifat lokal, tidak ikut push. Jangan arahkan DB_DATABASE/DB_URL ke database SILAP lama.
+Konfigurasi MySQL aktual tetap pada .env lokal dan tidak ikut push. SQLite awal di database/database.sqlite tidak lagi dipakai oleh aplikasi dan tetap diabaikan Git. Test memaksa DB_CONNECTION=sqlite, DB_DATABASE=:memory: dan DB_URL kosong agar tidak menjalankan migration/rollback pada MySQL. Jangan arahkan DB_DATABASE/DB_URL ke database SILAP lama.
 
 ## Validasi
 
@@ -108,6 +111,8 @@ Perintah yang dipakai:
 Hasil tahap 1A: 5 test lulus (11 assertion), formatter lulus, manifest Composer valid, platform requirements terpenuhi, 3 migration berhasil, dan build Vite berhasil. HTTP halaman utama, kesehatan, seluruh CSS/font template yang dipakai, dan aset build merespons 200.
 
 Pengujian mencakup halaman publik, endpoint kesehatan, locale/timezone, seeder tanpa akun contoh, serta rollback dan migrate ulang pada SQLite in-memory. Belum ada uji browser visual, performa produksi, atau pengujian fitur bisnis.
+
+Peralihan ke MySQL: koneksi schema silap_db terverifikasi kosong sebelum migration; 3 migration fondasi diterapkan tanpa reset/fresh/rollback pada MySQL. Test tetap berjalan pada SQLite in-memory.
 
 ## Progres bertahap
 
